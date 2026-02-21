@@ -1,0 +1,13 @@
+# Chrome profile (too large)
+chrome_profile/
+
+# Temporary files
+*.tmp
+*.log
+__pycache__/
+*.pyc
+
+# Local testing
+test_*.py
+.vscode/
+.idea/
