@@ -73,21 +73,31 @@ def load_all_csv_files():
         print("   Expected files like: SDB (1).csv, SDB (2).csv")
         return None
     
-    # Sort files (SDB (1), SDB (2), SDB (3)...)
-    csv_files.sort()
-    
-    print(f"✅ Found {len(csv_files)} CSV files:")
-    for f in csv_files:
-        print(f"   - {f}")
-    
-    # सर्व files load करून combine करा
-    all_dataframes = []
-    total_contacts = 0
-    
-    for csv_file in csv_files:
-        try:
-            # No header, 2 columns: Phone, Name
-            df = pd.read_csv(csv_file, header=None, names=['Phone', 'Name'])
+   def save(self):
+    """Progress save करतो - error handling सह"""
+    try:
+        data = {
+            'index': self.index,
+            'total_sent': self.total_sent,
+            'total_failed': self.total_failed,
+            'last_date': datetime.now().strftime('%Y-%m-%d'),
+            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        # Atomic write (safe save)
+        temp_file = 'progress.json.tmp'
+        with open(temp_file, 'w') as f:
+            json.dump(data, f, indent=4)
+        
+        # Rename (atomic operation)
+        if os.path.exists('progress.json'):
+            os.remove('progress.json')
+        os.rename(temp_file, 'progress.json')
+        
+        print(f"💾 Progress saved: Index={self.index}, Sent={self.total_sent}")
+        
+    except Exception as e:
+        print(f"⚠️ Progress save error: {str(e)}")
             all_dataframes.append(df)
             total_contacts += len(df)
             print(f"   ✅ Loaded {csv_file}: {len(df)} contacts")
